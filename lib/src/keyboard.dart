@@ -15,6 +15,8 @@ class OnscreenKeyboard extends StatelessWidget {
   final Color? backgroundColor;
   final Color? buttonColor;
   final Color? focusColor;
+
+  final Color? textColor;
   OnscreenKeyboard({
     this.onChanged,
     this.backgroundColor,
@@ -23,6 +25,8 @@ class OnscreenKeyboard extends StatelessWidget {
     this.buttonColor,
     this.value,
     required this.initialCase,
+
+    this.textColor,
   });
   @override
   Widget build(BuildContext context) {
@@ -39,6 +43,7 @@ class OnscreenKeyboard extends StatelessWidget {
         backgroundColor: backgroundColor,
         buttonColor: buttonColor,
         focusColor: focusColor,
+        textColor: textColor,
       ),
     );
   }
@@ -52,6 +57,7 @@ class OnscreenKeyboardWidget extends StatefulWidget {
   final Color? backgroundColor;
   final Color? buttonColor;
   final Color? focusColor;
+  final Color? textColor;
   OnscreenKeyboardWidget({
     this.onChanged,
     this.backgroundColor,
@@ -60,6 +66,7 @@ class OnscreenKeyboardWidget extends StatefulWidget {
     this.buttonColor,
     this.value,
     this.initialCase,
+    this.textColor,
   });
   @override
   _OnscreenKeyboardWidgetState createState() => _OnscreenKeyboardWidgetState();
@@ -79,12 +86,12 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
   void specialCharacters() {
     //
     KeyboardShiftState state = BlocProvider.of<KeyboardShiftBloc>(context).state;
-    if (state is KeyboardShiftSymbols) {
+    if (state is KeyboardShiftSymbols1 || state is KeyboardShiftSymbols2) {
       BlocProvider.of<KeyboardShiftBloc>(context)
-          .add(KeyboardShiftUpperCaseEvent());
+          .add(KeyboardShiftLowerCaseEvent());
     } else {
       BlocProvider.of<KeyboardShiftBloc>(context)
-          .add(KeyboardShiftSymbolsEvent());
+          .add(KeyboardShiftSymbols1Event());
     }
   }
 
@@ -96,6 +103,12 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
     } else if (state is KeyboardShiftLowerCase) {
       BlocProvider.of<KeyboardShiftBloc>(context)
           .add(KeyboardShiftUpperCaseEvent());
+    } else if (state is KeyboardShiftSymbols1) {
+      BlocProvider.of<KeyboardShiftBloc>(context)
+          .add(KeyboardShiftSymbols2Event());
+    } else if (state is KeyboardShiftSymbols2) {
+      BlocProvider.of<KeyboardShiftBloc>(context)
+          .add(KeyboardShiftSymbols1Event());
     }
   }
 
@@ -115,11 +128,14 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
         BlocProvider.of<KeyboardShiftBloc>(context)
             .add(KeyboardShiftUpperCaseEvent());
         break;
-      case InitialCase.NUMERIC:
+      case InitialCase.SYMBOL1:
         BlocProvider.of<KeyboardShiftBloc>(context)
-            .add(KeyboardShiftSymbolsEvent());
+            .add(KeyboardShiftSymbols1Event());
         break;
-
+      case InitialCase.SYMBOL2:
+        BlocProvider.of<KeyboardShiftBloc>(context)
+            .add(KeyboardShiftSymbols2Event());
+        break;
       default:
         BlocProvider.of<KeyboardShiftBloc>(context)
             .add(KeyboardShiftUpperCaseEvent());
@@ -137,6 +153,51 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Row(
+                children: [
+
+                  Flexible(
+                    child: new Button(
+                      autofocus: false,
+                      focusColor: widget.focusColor ?? widget.focusColor,
+                      borderColor: widget.borderColor ?? widget.borderColor,
+                      buttonColor: widget.buttonColor ?? widget.buttonColor,
+                      textColor: widget.textColor,
+                      onPressed: () {
+                        text = '';
+                        setState(() {});
+                        widget.onChanged!(text);
+                      },
+                      label: new Text(
+                        'CLEAR',
+                        style: new TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  Flexible(
+                    child: new Button(
+                      autofocus: false,
+                      focusColor: widget.focusColor ?? widget.focusColor,
+                      borderColor: widget.borderColor ?? widget.borderColor,
+                      buttonColor: widget.buttonColor ?? widget.buttonColor,
+                      textColor: widget.textColor,
+                      onPressed: () {
+                        if (text!.length > 0) {
+                          text = text!.substring(0, text!.length - 1);
+                        }
+                        setState(() {});
+                        widget.onChanged!(text);
+                      },
+                      label: new Icon(
+                        Icons.backspace,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               Flexible(
                 child: Container(
                   color: widget.backgroundColor != null
@@ -151,7 +212,9 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
                       return _buildBody(state.upperCase);
                     } else if (state is KeyboardShiftLoading) {
                       return _buildBody(state.loading);
-                    } else if (state is KeyboardShiftSymbols) {
+                    } else if (state is KeyboardShiftSymbols1) {
+                      return _buildBody(state.symbols);
+                    } else if (state is KeyboardShiftSymbols2) {
                       return _buildBody(state.symbols);
                     } else {
                       return _buildBody(loading);
@@ -171,11 +234,31 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
                         focusColor: widget.focusColor ?? widget.focusColor,
                         borderColor: widget.borderColor ?? widget.borderColor,
                         buttonColor: widget.buttonColor ?? widget.buttonColor,
+                        textColor: widget.textColor,
                         onPressed: () {
                           shift();
                         },
-                        label: new Icon(
-                          Icons.arrow_upward,
+                        label: new BlocBuilder<KeyboardShiftBloc, KeyboardShiftState>(
+                          builder: (context, state) {
+                            if (state is KeyboardShiftSymbols1) {
+                              return Text(
+                                '1/2',
+                                style: new TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                              );
+                            } else if (state is KeyboardShiftSymbols2) {
+                              return Text(
+                                '2/2',
+                                style: new TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                              );
+                            } else {
+                              return Icon(
+                                Icons.arrow_upward,
+                                size: 20,
+                              );
+                            }
+                          },
                         ),
                       ),
                     ),
@@ -185,24 +268,37 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
                         focusColor: widget.focusColor ?? widget.focusColor,
                         borderColor: widget.borderColor ?? widget.borderColor,
                         buttonColor: widget.buttonColor ?? widget.buttonColor,
+                        textColor: widget.textColor,
                         onPressed: () {
-                          text = '';
-                          setState(() {});
-                          widget.onChanged!(text);
+                          specialCharacters();
                         },
-                        label: new Text(
-                          'CLEAR',
-                          style: new TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
+                        label: new BlocBuilder<KeyboardShiftBloc, KeyboardShiftState>(
+                          builder: (context, state) {
+                            if (state is KeyboardShiftSymbols1 ||
+                                state is KeyboardShiftSymbols2) {
+                              return Text(
+                                'ABC',
+                                style: new TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                              );
+                            } else {
+                              return Text(
+                                '!#1',
+                                style: new TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                              );
+                            }
+                          },
                         ),
                       ),
                     ),
-                    Flexible(
+                    Flexible( flex: 6,
                       child: new Button(
                         autofocus: true,
                         focusColor: widget.focusColor ?? widget.focusColor,
                         borderColor: widget.borderColor ?? widget.borderColor,
                         buttonColor: widget.buttonColor ?? widget.buttonColor,
+                        textColor: widget.textColor,
                         onPressed: () {
                           text = text! + ' ';
                           setState(() {});
@@ -226,49 +322,6 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              new Button(
-                autofocus: false,
-                focusColor: widget.focusColor ?? widget.focusColor,
-                borderColor: widget.borderColor ?? widget.borderColor,
-                buttonColor: widget.buttonColor ?? widget.buttonColor,
-                onPressed: () {
-                  if (text!.length > 0) {
-                    text = text!.substring(0, text!.length - 1);
-                  }
-                  setState(() {});
-                  widget.onChanged!(text);
-                },
-                label: new Icon(
-                  Icons.backspace,
-                  size: 20,
-                ),
-              ),
-              new Button(
-                autofocus: false,
-                focusColor: widget.focusColor ?? widget.focusColor,
-                borderColor: widget.borderColor ?? widget.borderColor,
-                buttonColor: widget.buttonColor ?? widget.buttonColor,
-                onPressed: () {
-                  specialCharacters();
-                },
-                label: new BlocBuilder<KeyboardShiftBloc, KeyboardShiftState>(
-                  builder: (context, state) {
-                    if (state is KeyboardShiftSymbols) {
-                      return Text(
-                        'ABC',
-                        style: new TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
-                      );
-                    } else {
-                      return Text(
-                        '&123',
-                        style: new TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
-                      );
-                    }
-                  },
-                ),
-              ),
             ],
           ),
         ),
@@ -282,7 +335,7 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
         shrinkWrap: true,
         itemCount: labels.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 7,
+          crossAxisCount: 10,
         ),
         itemBuilder: (context, index) {
           return new Button(
@@ -290,9 +343,9 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
             focusColor: widget.focusColor ?? widget.focusColor,
             borderColor: widget.borderColor ?? widget.borderColor,
             buttonColor: widget.buttonColor ?? widget.buttonColor,
+            textColor: widget.textColor,
             label: new Text(
               labels[index],
-              style: new TextStyle(fontSize: 25),
             ),
             onPressed: () {
               text = text! + labels[index];

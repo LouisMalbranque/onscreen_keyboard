@@ -15,6 +15,10 @@ class KeyboardShiftLowerCaseEvent extends KeyboardShiftEvent {
   const KeyboardShiftLowerCaseEvent();
 }
 
-class KeyboardShiftSymbolsEvent extends KeyboardShiftEvent {
-  const KeyboardShiftSymbolsEvent();
+class KeyboardShiftSymbols1Event extends KeyboardShiftEvent {
+  const KeyboardShiftSymbols1Event();
+}
+
+class KeyboardShiftSymbols2Event extends KeyboardShiftEvent {
+  const KeyboardShiftSymbols2Event();
 }

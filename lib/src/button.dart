@@ -8,6 +8,8 @@ class Button extends StatefulWidget {
   final Color? buttonColor;
   final Color? focusColor;
   final bool? autofocus;
+  final Color? textColor;
+
   Button({
     required this.label,
     this.onPressed,
@@ -15,6 +17,7 @@ class Button extends StatefulWidget {
     this.borderColor,
     this.focusColor,
     this.buttonColor,
+    this.textColor,
   });
 
   @override
@@ -48,6 +51,9 @@ class _ButtonState extends State<Button> {
         onPressed: () {
           widget.onPressed!();
         },
+        textStyle: TextStyle(
+          color: widget.textColor ?? widget.textColor,
+        ),
         child: new ButtonWidget(
           label: widget.label,
         ),

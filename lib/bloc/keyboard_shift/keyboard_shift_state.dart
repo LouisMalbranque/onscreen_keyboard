@@ -26,7 +26,12 @@ class KeyboardShiftLowerCase extends KeyboardShiftState {
   const KeyboardShiftLowerCase(this.lowerCase);
 }
 
-class KeyboardShiftSymbols extends KeyboardShiftState {
+class KeyboardShiftSymbols1 extends KeyboardShiftState {
   final List<String> symbols;
-  const KeyboardShiftSymbols(this.symbols);
+  const KeyboardShiftSymbols1(this.symbols);
+}
+
+class KeyboardShiftSymbols2 extends KeyboardShiftState {
+  final List<String> symbols;
+  const KeyboardShiftSymbols2(this.symbols);
 }
