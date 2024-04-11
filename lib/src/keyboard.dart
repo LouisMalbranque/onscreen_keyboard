@@ -346,6 +346,7 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
             textColor: widget.textColor,
             label: new Text(
               labels[index],
+              style: new TextStyle(fontSize: 17, ),
             ),
             onPressed: () {
               text = text! + labels[index];
