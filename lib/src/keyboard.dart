@@ -17,6 +17,8 @@ class OnscreenKeyboard extends StatelessWidget {
   final Color? focusColor;
 
   final Color? textColor;
+  final double? fontSize;
+  
   OnscreenKeyboard({
     this.onChanged,
     this.backgroundColor,
@@ -27,6 +29,7 @@ class OnscreenKeyboard extends StatelessWidget {
     required this.initialCase,
 
     this.textColor,
+    this.fontSize,
   });
   @override
   Widget build(BuildContext context) {
@@ -44,6 +47,7 @@ class OnscreenKeyboard extends StatelessWidget {
         buttonColor: buttonColor,
         focusColor: focusColor,
         textColor: textColor,
+        fontSize: fontSize,
       ),
     );
   }
@@ -58,6 +62,7 @@ class OnscreenKeyboardWidget extends StatefulWidget {
   final Color? buttonColor;
   final Color? focusColor;
   final Color? textColor;
+  final double? fontSize;
   OnscreenKeyboardWidget({
     this.onChanged,
     this.backgroundColor,
@@ -67,6 +72,7 @@ class OnscreenKeyboardWidget extends StatefulWidget {
     this.value,
     this.initialCase,
     this.textColor,
+    this.fontSize,
   });
   @override
   _OnscreenKeyboardWidgetState createState() => _OnscreenKeyboardWidgetState();
@@ -171,7 +177,7 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
                       label: new Text(
                         'CLEAR',
                         style: new TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                            fontSize: widget.fontSize ?? 17, fontWeight: FontWeight.bold, color: widget.textColor),
                       ),
                     ),
                   ),
@@ -244,13 +250,13 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
                               return Text(
                                 '1/2',
                                 style: new TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                                    fontSize: widget.fontSize ?? 17, fontWeight: FontWeight.bold, color: widget.textColor),
                               );
                             } else if (state is KeyboardShiftSymbols2) {
                               return Text(
                                 '2/2',
                                 style: new TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                                    fontSize: widget.fontSize ?? 17, fontWeight: FontWeight.bold, color: widget.textColor),
                               );
                             } else {
                               return Icon(
@@ -279,13 +285,13 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
                               return Text(
                                 'ABC',
                                 style: new TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                                    fontSize: widget.fontSize ?? 17, fontWeight: FontWeight.bold, color: widget.textColor),
                               );
                             } else {
                               return Text(
                                 '!#1',
                                 style: new TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold, color: widget.textColor),
+                                    fontSize: widget.fontSize ?? 17, fontWeight: FontWeight.bold, color: widget.textColor),
                               );
                             }
                           },
@@ -346,7 +352,7 @@ class _OnscreenKeyboardWidgetState extends State<OnscreenKeyboardWidget> {
             textColor: widget.textColor,
             label: new Text(
               labels[index],
-              style: new TextStyle(fontSize: 17, ),
+              style: new TextStyle(fontSize: widget.fontSize ?? 17, ),
             ),
             onPressed: () {
               text = text! + labels[index];
